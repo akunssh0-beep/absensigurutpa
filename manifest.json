@@ -1,11 +1,11 @@
 {
   "name": "TPA ABSENSI",
   "short_name": "TPA ABSENSI",
-  "start_url": "index.html?v=1777167772870",
+  "start_url": "index.html?v=1777169677598",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
-  "version": "1777167772870",
+  "version": "1777169677598",
   "icons": [
     {
       "src": "icon-192.png",

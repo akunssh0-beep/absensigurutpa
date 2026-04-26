@@ -83,6 +83,13 @@
         
         .laser-line { position: absolute; left: 0; right: 0; height: 3px; background: #10b981; box-shadow: 0 0 15px #10b981; animation: laser 2.5s infinite linear; z-index: 10; }
     </style>
+
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json?v=1777169677598">
+    <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
 
@@ -563,7 +570,7 @@
                 <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 rounded-xl flex items-center justify-center font-black text-xs">${l.name.charAt(0)}</div>
                 <div class="flex-1">
                     <p class="text-[10px] font-black dark:text-slate-200 uppercase">${l.name}</p>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase">${l.time} • ${l.shift}</p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase">${l.time} ï¿½ ${l.shift}</p>
                 </div>
             </div>`).join('') : '<p class="text-center py-10 opacity-30 text-[9px] font-black uppercase dark:text-white">Belum Ada Presensi</p>';
 
@@ -682,5 +689,30 @@
         navigator.serviceWorker.register('./sw.js?v=1777168537833').catch(() => {});
     }
 </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js?v=1777169677598').then(reg => {
+            console.log('PWA: ServiceWorker Registered');
+            
+            reg.onupdatefound = () => {
+              const installingWorker = reg.installing;
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  window.location.reload();
+                }
+              };
+            };
+          });
+        });
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      }
+    </script>
 </body>
 </html>
