@@ -122,7 +122,7 @@
     <div class="relative w-24 h-24">
         <div class="absolute inset-0 border-4 border-emerald-500/20 rounded-3xl"></div>
         <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-3xl animate-spin"></div>
-        <div class="absolute inset-4 bg-emerald-500/10 rounded-2xl animate-pulse flex items-center justify-center text-2xl">🕌</div>
+        <div class="absolute inset-4 bg-emerald-500/10 rounded-2xl animate-pulse flex items-center justify-center text-2xl"></div>
     </div>
     <div class="mt-8 overflow-hidden rounded-full w-48 h-1 bg-slate-100 dark:bg-slate-800 relative">
         <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-amber-400 animate-shimmer" style="width: 50%;"></div>
@@ -139,7 +139,7 @@
         
         <div class="relative z-10 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white/20 glass-effect rounded-2xl flex items-center justify-center text-xl shadow-lg border border-white/20">📖</div>
+                <div class="w-10 h-10 bg-white/20 glass-effect rounded-2xl flex items-center justify-center text-xl shadow-lg border border-white/20"></div>
                 <div>
                     <p class="text-[8px] font-black text-emerald-100 uppercase tracking-widest leading-none">TPA BAITUL MUTTAQIN</p>
                     <p class="text-[10px] font-bold text-white uppercase tracking-tighter">Desa Sampanahan Hilir</p>
@@ -156,7 +156,7 @@
                     <p id="date-display" class="text-[7px] font-bold text-emerald-200 uppercase tracking-widest opacity-80">---</p>
                 </div>
                 <button onclick="toggleDarkMode()" class="w-10 h-10 bg-white/10 glass-effect rounded-2xl flex items-center justify-center text-white border border-white/20 transition-transform active:scale-90">
-                    <span id="theme-icon">🌙</span>
+                    <span id="theme-icon"></span>
                 </button>
             </div>
         </div>
@@ -227,7 +227,7 @@
         
         <main id="view-home" class="px-6 mt-4 space-y-6">
             <section id="card-auth" class="bg-white/80 dark:bg-slate-900/80 glass-effect p-8 rounded-[2.5rem] shadow-xl border border-white/20 dark:border-slate-800/50 text-center relative z-20">
-                <div class="w-16 h-16 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 rounded-[1.5rem] flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner animate-bounce">🗝️</div>
+                <div class="w-16 h-16 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 rounded-[1.5rem] flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner animate-bounce"></div>
                 <h3 class="font-extrabold text-slate-800 dark:text-slate-100 text-sm uppercase tracking-widest mb-1">Verifikasi Akun</h3>
                 <div class="space-y-4">
                     <select id="input-user" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-700 p-4 rounded-2xl text-xs font-black outline-none appearance-none text-center focus:border-emerald-500 transition-all dark:text-white">
@@ -240,7 +240,7 @@
             <div id="dashboard-content" class="hidden space-y-8">
                 <section>
                     <div class="flex justify-between items-center mb-5 px-2">
-                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">📅 Jam Mengajar Sore</h3>
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500"> Jam Mengajar Sore</h3>
                         <span id="logical-date-label" class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 uppercase tracking-widest">--/--/----</span>
                     </div>
                     <div id="schedule-container" class="space-y-4"></div>
@@ -248,7 +248,7 @@
 
                 <section class="pb-10">
                     <div class="flex justify-between items-center mb-5 px-2">
-                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">📝 Log Kehadiran Harian</h3>
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500"> Log Kehadiran Harian</h3>
                         <div class="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
                             <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                             <span class="text-[8px] font-black text-emerald-500 uppercase tracking-widest">Live</span>
@@ -311,13 +311,13 @@
 <div id="modal-scanner" class="fixed inset-0 z-[6000] hidden flex-col bg-black/90 backdrop-blur-2xl">
     <div class="px-6 pt-12 pb-6 flex justify-between items-center text-white">
         <div><h4 class="font-black text-lg tracking-tighter uppercase">Scan Presensi Guru</h4><p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest">Kamera Aktif</p></div>
-        <button onclick="closeScanner()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">✕</button>
+        <button onclick="closeScanner()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center"></button>
     </div>
     <div class="flex-1 flex flex-col items-center justify-center p-6"><div class="relative"><div id="qr-reader" class="w-[280px] h-[280px] bg-slate-950 rounded-[3rem] overflow-hidden border-4 border-white/20"></div><div class="laser-line"></div></div></div>
 </div>
 
 <div id="modal-success-presence" class="fixed inset-0 bg-white dark:bg-slate-950 z-[8000] hidden flex-col items-center justify-center text-center p-10">
-    <div class="w-32 h-32 bg-teal-500/10 text-teal-500 rounded-[2.5rem] flex items-center justify-center text-6xl mb-8 animate-bounce">✅</div>
+    <div class="w-32 h-32 bg-teal-500/10 text-teal-500 rounded-[2.5rem] flex items-center justify-center text-6xl mb-8 animate-bounce"></div>
     <h2 class="text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">Berhasil!</h2>
     <p id="success-nurse-name" class="text-xl font-bold text-teal-600 mt-3 uppercase tracking-widest"></p>
     <div class="mt-10 w-full max-w-xs bg-slate-50 dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-100 dark:border-slate-800">
@@ -329,7 +329,7 @@
 
 <div id="alert-box" class="fixed top-8 left-6 right-6 z-[7000] transition-all duration-500 translate-y-[-150%] opacity-0 pointer-events-none">
     <div class="bg-white/90 dark:bg-slate-900/90 glass-effect p-4 rounded-3xl shadow-2xl flex items-center gap-4 border border-white/20 dark:border-slate-800">
-        <div id="alert-icon-bg" class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl">💡</div>
+        <div id="alert-icon-bg" class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl"></div>
         <div class="flex-1"><h4 id="alert-title" class="text-[10px] font-black uppercase tracking-widest dark:text-white">Pesan Sistem</h4><p id="alert-msg" class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-0.5"></p></div>
     </div>
 </div>
@@ -428,10 +428,10 @@
         document.getElementById('alert-title').innerText = title;
         document.getElementById('alert-msg').innerText = msg;
         if(type === 'success') {
-            iconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-emerald-500/10 text-emerald-600"; iconBg.innerText = '✅';
+            iconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-emerald-500/10 text-emerald-600"; iconBg.innerText = '';
             playSfx('ping'); triggerHaptic(30);
         } else {
-            iconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-rose-500/10 text-rose-500"; iconBg.innerText = '⚠️';
+            iconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-rose-500/10 text-rose-500"; iconBg.innerText = '';
             playSfx('error'); triggerHaptic(100);
         }
         box.style.transform = 'translateY(0)'; box.style.opacity = '1';
@@ -442,7 +442,7 @@
         triggerHaptic(20);
         state.darkMode = !state.darkMode; localStorage.setItem('theme', state.darkMode ? 'dark' : 'light');
         document.documentElement.classList.toggle('dark', state.darkMode);
-        document.getElementById('theme-icon').innerText = state.darkMode ? '☀️' : '🌙';
+        document.getElementById('theme-icon').innerText = state.darkMode ? '' : '';
     }
 
     async function fetchData(silent = false) {
@@ -452,13 +452,12 @@
             state.data = await resp.json();
             
             const sel = document.getElementById('input-user');
-            if(!state.user){
+            if(!state.user && sel){
                  sel.innerHTML = `<option value="">-- Pilih Guru/Ustadz --</option>` + 
                             (state.data.officers || []).map(o => `<option value="${o}">${o}</option>`).join('');
             }
 
             renderDashboard();
-            // GPS Aktif saat buka aplikasi (jika sudah login)
             if (state.user && !state.gpsCheckedOnce) checkGPS();
         } catch (e) { if(!silent) showAlert("Error", "Gagal sinkron database", "error"); }
         finally { 
@@ -468,9 +467,10 @@
     }
 
     function handleLogin() {
-        if(state.isLoading) return showAlert("Tunggu", "Data sedang dimuat...", "error");
+        const sel = document.getElementById('input-user');
+        if(!sel || state.isLoading) return showAlert("Tunggu", "Data sedang dimuat...", "error");
         
-        const val = document.getElementById('input-user').value;
+        const val = sel.value;
         if (!val || val === "") return showAlert("Peringatan", "Pilih nama ustadz!", "error");
         
         state.user = val; 
@@ -479,7 +479,6 @@
         
         renderDashboard();
         showView('home');
-        // GPS Aktif saat login
         if(!state.gpsCheckedOnce) checkGPS();
     }
 
@@ -490,9 +489,11 @@
         state.gpsCheckedOnce = false; 
         
         const sel = document.getElementById('input-user');
-        sel.innerHTML = `<option value="">-- Pilih Guru/Ustadz --</option>` + 
-                    (state.data.officers || []).map(o => `<option value="${o}">${o}</option>`).join('');
-        sel.value = "";
+        if(sel) {
+            sel.innerHTML = `<option value="">-- Pilih Guru/Ustadz --</option>` + 
+                        (state.data.officers || []).map(o => `<option value="${o}">${o}</option>`).join('');
+            sel.value = "";
+        }
         
         renderDashboard(); 
     }
@@ -576,49 +577,59 @@
 
     function renderDashboard() {
         const logicalDate = getLogicalDate();
-        document.getElementById('user-greeting').innerText = state.user ? state.user : "-";
-        document.getElementById('logical-date-label').innerText = logicalDate;
+        const greeting = document.getElementById('user-greeting');
+        const dateLabel = document.getElementById('logical-date-label');
+        if(greeting) greeting.innerText = state.user ? state.user : "-";
+        if(dateLabel) dateLabel.innerText = logicalDate;
         
         const isAuth = !!state.user;
-        document.getElementById('card-auth').classList.toggle('hidden', isAuth);
-        document.getElementById('dashboard-content').classList.toggle('hidden', !isAuth);
+        const cardAuth = document.getElementById('card-auth');
+        const dashContent = document.getElementById('dashboard-content');
+        if(cardAuth) cardAuth.classList.toggle('hidden', isAuth);
+        if(dashContent) dashContent.classList.toggle('hidden', !isAuth);
         
         const profile = document.getElementById('profile-card');
-        profile.classList.toggle('hidden', !isAuth);
+        if(profile) profile.classList.toggle('hidden', !isAuth);
         
         const isTeachingTime = isWithinTeachingHours();
-        document.getElementById('header-shift-name').innerText = isHoliday() ? "LIBUR JUMAT" : (isTeachingTime ? "SEDANG MENGAJAR" : "SORE (14-16)");
+        const hS = document.getElementById('header-shift-name');
+        if(hS) hS.innerText = isHoliday() ? "LIBUR JUMAT" : (isTeachingTime ? "SEDANG MENGAJAR" : "SORE (14-16)");
 
         if(state.user) {
-            document.getElementById('nurse-full-name').innerText = state.user;
-            document.getElementById('nurse-initial').innerText = state.user.charAt(0);
+            const nurseFullName = document.getElementById('nurse-full-name');
+            const nurseInit = document.getElementById('nurse-initial');
+            const statTotal = document.getElementById('stat-total-life');
+            if(nurseFullName) nurseFullName.innerText = state.user;
+            if(nurseInit) nurseInit.innerText = state.user.charAt(0);
+            
             const allLogsUser = (state.data.logs || []).filter(l => l.name === state.user);
-            document.getElementById('stat-total-life').innerText = allLogsUser.length;
+            if(statTotal) statTotal.innerText = allLogsUser.length;
 
             const statusBadge = document.getElementById('user-jaga-status');
             const userLogsToday = (state.data.logs || []).filter(l => l.name === state.user && l.date === logicalDate);
             const latestLog = userLogsToday[0]; 
             
-            if(isHoliday()) {
-                statusBadge.classList.remove('hidden');
-                statusBadge.innerText = "Libur Jumat";
-                statusBadge.className = "px-3 py-1 bg-amber-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
-            } else if(latestLog) {
-                statusBadge.classList.remove('hidden');
-                // Mode Ikuti Absen
-                if(latestLog.shift === 'Sore') {
-                    statusBadge.innerText = "Hadir Mengajar";
-                    statusBadge.className = "px-3 py-1 bg-emerald-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
-                } else {
-                    statusBadge.innerText = "Status: " + latestLog.shift;
+            if(statusBadge) {
+                if(isHoliday()) {
+                    statusBadge.classList.remove('hidden');
+                    statusBadge.innerText = "Libur Jumat";
                     statusBadge.className = "px-3 py-1 bg-amber-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
+                } else if(latestLog) {
+                    statusBadge.classList.remove('hidden');
+                    if(latestLog.shift === 'Sore') {
+                        statusBadge.innerText = "Hadir Mengajar";
+                        statusBadge.className = "px-3 py-1 bg-emerald-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
+                    } else {
+                        statusBadge.innerText = "Status: " + latestLog.shift;
+                        statusBadge.className = "px-3 py-1 bg-amber-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
+                    }
+                } else if(isTeachingTime) {
+                    statusBadge.classList.remove('hidden');
+                    statusBadge.innerText = "Waktunya Mengajar";
+                    statusBadge.className = "px-3 py-1 bg-emerald-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest animate-pulse shadow-lg";
+                } else {
+                    statusBadge.classList.add('hidden');
                 }
-            } else if(isTeachingTime) {
-                statusBadge.classList.remove('hidden');
-                statusBadge.innerText = "Waktunya Mengajar";
-                statusBadge.className = "px-3 py-1 bg-emerald-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest animate-pulse shadow-lg";
-            } else {
-                statusBadge.classList.add('hidden');
             }
         }
 
@@ -652,22 +663,28 @@
                 </div>
             </div>`;
         });
-        document.getElementById('schedule-container').innerHTML = schHtml;
+        const schContainer = document.getElementById('schedule-container');
+        if(schContainer) schContainer.innerHTML = schHtml;
 
         const lToday = (state.data.logs || []).filter(l => l.date === logicalDate).sort((a, b) => b.time.localeCompare(a.time));
-        document.getElementById('live-log-container').innerHTML = lToday.length ? lToday.map(l => {
-            const isPerm = l.shift === 'Izin' || l.shift === 'Sakit';
-            const bgClass = isPerm ? "bg-amber-500/10 text-amber-600 border-amber-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
-            return `<div class="bg-white/40 dark:bg-slate-900/40 glass-effect p-4 rounded-[1.5rem] border border-white/20 dark:border-slate-800 flex items-center gap-4"><div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 rounded-xl flex items-center justify-center font-black text-xs uppercase">${l.name.charAt(0)}</div><div class="flex-1"><p class="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">${l.name}</p><p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${l.time} • ${l.shift}</p></div><div class="${bgClass} px-3 py-1.5 rounded-xl text-[7px] font-black uppercase border">${isPerm ? l.shift : 'Hadir'}</div></div>`;
-        }).join('') : '<div class="text-center py-10 opacity-30 text-[9px] font-black uppercase tracking-widest dark:text-white">Belum Ada Presensi</div>';
+        const liveLogContainer = document.getElementById('live-log-container');
+        if(liveLogContainer) {
+            liveLogContainer.innerHTML = lToday.length ? lToday.map(l => {
+                const isPerm = l.shift === 'Izin' || l.shift === 'Sakit';
+                const bgClass = isPerm ? "bg-amber-500/10 text-amber-600 border-amber-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+                return `<div class="bg-white/40 dark:bg-slate-900/40 glass-effect p-4 rounded-[1.5rem] border border-white/20 dark:border-slate-800 flex items-center gap-4"><div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 rounded-xl flex items-center justify-center font-black text-xs uppercase">${l.name.charAt(0)}</div><div class="flex-1"><p class="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">${l.name}</p><p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${l.time} � ${l.shift}</p></div><div class="${bgClass} px-3 py-1.5 rounded-xl text-[7px] font-black uppercase border">${isPerm ? l.shift : 'Hadir'}</div></div>`;
+            }).join('') : '<div class="text-center py-10 opacity-30 text-[9px] font-black uppercase tracking-widest dark:text-white">Belum Ada Presensi</div>';
+        }
 
         const sBtn = document.getElementById('btn-main-scan');
-        if(isHoliday() || !isTeachingTime) {
-            sBtn.classList.add('opacity-50', 'grayscale');
-            sBtn.onclick = () => showAlert("Bukan Jam Mengajar", "Presensi hanya jam 14:00 - 16:00", "error");
-        } else {
-            sBtn.classList.remove('opacity-50', 'grayscale');
-            sBtn.onclick = initiateScan;
+        if(sBtn) {
+            if(isHoliday() || !isTeachingTime) {
+                sBtn.classList.add('opacity-50', 'grayscale');
+                sBtn.onclick = () => showAlert("Bukan Jam Mengajar", "Presensi hanya jam 14:00 - 16:00", "error");
+            } else {
+                sBtn.classList.remove('opacity-50', 'grayscale');
+                sBtn.onclick = initiateScan;
+            }
         }
     }
 
@@ -676,7 +693,9 @@
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const searchTerm = document.getElementById('rekap-search')?.value.toLowerCase() || "";
         const shiftFilter = document.getElementById('rekap-filter-shift')?.value || "";
-        document.getElementById('rekap-month-label').innerText = `${CONFIG.MONTHS[month]} ${year}`;
+        const monthLabel = document.getElementById('rekap-month-label');
+        if(monthLabel) monthLabel.innerText = `${CONFIG.MONTHS[month]} ${year}`;
+        
         let html = `<table class="rekap-table"><thead><tr class="bg-slate-50 dark:bg-slate-800"><th class="sticky-left">Ustadz/Guru</th>`;
         for(let i=1; i<=daysInMonth; i++) {
             const isFri = new Date(year, month, i).getDay() === 5;
@@ -687,7 +706,7 @@
         if (!filtered.length) { html += `<tr><td colspan="${daysInMonth + 2}" class="py-10 text-center opacity-30 italic text-[9px] uppercase tracking-widest dark:text-white">Data tidak ditemukan</td></tr>`; }
         else {
             filtered.forEach(name => {
-                let total = 0; let rowCells = ""; let hasM = false;
+                let total = 0; let rowCells = ""; let hasMatchFilter = false;
                 for(let d=1; d<=daysInMonth; d++) {
                     const dK = `${d.toString().padStart(2, '0')}/${(month + 1).toString().padStart(2, '0')}/${year}`;
                     const logs = (state.data.logs || []).filter(l => l.name === name && l.date === dK);
@@ -698,15 +717,16 @@
                         if (shiftFilter === "" || l.shift === shiftFilter || (isP && shiftFilter === "")) {
                             char = isP ? l.shift.charAt(0) : 'S';
                             css = isP ? 'code-S !text-amber-600 !bg-amber-100 font-black' : `code-S font-black`;
-                            if(!isP) total++; hasM = true;
+                            if(!isP) total++; hasMatchFilter = true;
                         }
-                    }
+                    } else if (shiftFilter === "") { hasMatchFilter = true; }
                     rowCells += `<td class="${css} ${d === today ? 'today-col' : ''}">${char}</td>`;
                 }
-                if (shiftFilter === "" || hasM) { html += `<tr><td class="sticky-left uppercase font-black text-slate-700 dark:text-slate-300">${name}</td>${rowCells}<td class="sticky-right dark:text-emerald-400 font-black">${total}</td></tr>`; }
+                if (hasMatchFilter) { html += `<tr><td class="sticky-left uppercase font-black text-slate-700 dark:text-slate-300">${name}</td>${rowCells}<td class="sticky-right dark:text-emerald-400 font-black">${total}</td></tr>`; }
             });
         }
-        document.getElementById('rekap-table-container').innerHTML = html + `</tbody></table>`;
+        const tableContainer = document.getElementById('rekap-table-container');
+        if(tableContainer) tableContainer.innerHTML = html + `</tbody></table>`;
     }
 
     async function initiateScan() {
@@ -728,10 +748,19 @@
         state.scanner = new Html5Qrcode("qr-reader");
         try {
             await state.scanner.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, async (txt) => {
-                if (txt === (state.data.config.qrData || CONFIG.DEFAULT_QR)) { await state.scanner.stop(); state.scanner = null; document.getElementById('modal-scanner').classList.add('hidden'); processScan(); } 
-                else { showAlert("QR Gagal", "QR Code tidak valid", "error"); }
+                if (txt === (state.data.config.qrData || CONFIG.DEFAULT_QR)) { 
+                    await state.scanner.stop(); 
+                    state.scanner = null; 
+                    document.getElementById('modal-scanner').classList.add('hidden'); 
+                    processScan(); 
+                } else { 
+                    showAlert("QR Gagal", "QR Code tidak valid", "error"); 
+                }
             });
-        } catch (e) { showAlert("Error", "Gagal akses kamera", "error"); closeScanner(); }
+        } catch (e) { 
+            showAlert("Error", "Gagal akses kamera", "error"); 
+            closeScanner(); 
+        }
     }
 
     async function processScan() {
@@ -761,7 +790,7 @@
     }
 
     function checkGPS() {
-        if (!state.data.config.gpsLock || state.gpsCheckedOnce) { 
+        if (!state.data.config.gpsLock) { 
             state.isWithinRadius = true; 
             updateGPSUI(true, 0);
             return; 
@@ -771,8 +800,8 @@
             const uLat = pos.coords.latitude; const uLng = pos.coords.longitude;
             let found = false; let minD = Infinity;
             CONFIG.LOCATIONS.forEach(loc => {
-                const R = 6371e3; const φ1 = uLat * Math.PI/180; const φ2 = loc.lat * Math.PI/180; const Δφ = (loc.lat - uLat) * Math.PI/180; const Δλ = (loc.lng - uLng) * Math.PI/180;
-                const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+                const R = 6371e3; const 1 = uLat * Math.PI/180; const 2 = loc.lat * Math.PI/180; const  = (loc.lat - uLat) * Math.PI/180; const  = (loc.lng - uLng) * Math.PI/180;
+                const a = Math.sin(/2)**2 + Math.cos(1)*Math.cos(2)*Math.sin(/2)**2;
                 const d = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                 if (d <= loc.radius) found = true; if (d < minD) minD = d;
             });
@@ -782,7 +811,7 @@
             updateGPSUI(found, minD);
         }, (err) => {
             console.error(err);
-            showAlert("GPS Error", "Aktifkan GPS perangkat anda", "error");
+            updateGPSUI(false, 999);
         }, { enableHighAccuracy: true });
     }
 
@@ -795,7 +824,7 @@
             text.innerText = "Lokasi Valid (TPA)"; 
         } else { 
             dot.className = "w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"; 
-            text.innerText = `${Math.round(distance)}m Luar Area`; 
+            text.innerText = distance > 1000 ? "GPS Mati/Lemah" : `${Math.round(distance)}m Luar Area`; 
         }
     }
 
@@ -812,23 +841,18 @@
         fetchData();
         setInterval(() => {
             const now = new Date();
-            document.getElementById('time-display').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('date-display').innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            const timeDisp = document.getElementById('time-display');
+            const dateDisp = document.getElementById('date-display');
+            if(timeDisp) timeDisp.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            if(dateDisp) dateDisp.innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
             
             const isT = isWithinTeachingHours();
             const hS = document.getElementById('header-shift-name');
             if (hS) hS.innerText = isHoliday() ? "LIBUR JUMAT" : (isT ? "SEDANG MENGAJAR" : "SORE (14-16)");
         }, 1000);
         setInterval(() => fetchData(true), 60000);
-        // GPS hanya melacak jika user login dan belum divalidasi sekali
         setInterval(() => { if (state.user && !state.gpsCheckedOnce) checkGPS(); }, 15000);
     };
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js?v=202604').then(reg => { console.log('PWA: Ready'); }).catch(err => console.log('SW Fail', err));
-        });
-    }
 </script>
 
     <script>
@@ -836,7 +860,6 @@
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js?v=1777167772870').then(reg => {
             console.log('PWA: ServiceWorker Registered');
-            
             reg.onupdatefound = () => {
               const installingWorker = reg.installing;
               installingWorker.onstatechange = () => {
