@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id" class="antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sistem Presensi Guru - TPA Baitul Muttaqin</title>
+    
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        primary: { DEFAULT: '#059669', dark: '#065f46' },
+                        secondary: { DEFAULT: '#d97706', dark: '#92400e' },
+                    },
+                    animation: {
+                        'shimmer': 'shimmer 2s infinite linear',
+                        'laser': 'laser 2s infinite ease-in-out',
+                    },
+                    keyframes: {
+                        shimmer: { '0%': { transform: 'translateX(-100%)' }, '100%': { transform: 'translateX(100%)' } },
+                        laser: { '0%, 100%': { top: '0%' }, '50%': { top: '100%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom); }
+        body { -webkit-user-select: none; user-select: none; overflow: hidden; }
+        
+        .glass-effect { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .bg-mesh { background: radial-gradient(at 0% 0%, #ecfdf5 0px, transparent 50%), radial-gradient(at 100% 0%, #fffbeb 0px, transparent 50%); }
+        .dark .bg-mesh { background: radial-gradient(at 0% 0%, #064e3b 0px, transparent 50%), radial-gradient(at 100% 100%, #1e1b4b 0px, transparent 50%); }
+
+        .app-container { width: 100%; max-width: 480px; height: 100dvh; display: flex; flex-direction: column; position: relative; }
+        
+        #main-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            transition: all 0.4s ease;
+        }
+
+        .main-scroll { flex: 1; overflow-y: auto; scroll-behavior: smooth; padding-bottom: 140px; }
+        .main-scroll::-webkit-scrollbar { display: none; }
+
+        .rekap-wrapper { width: 100%; overflow-x: auto; border-radius: 1.5rem; position: relative; scroll-behavior: smooth; }
+        .rekap-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.7rem; }
+        .rekap-table th { padding: 12px 8px; text-align: center; font-weight: 800; border-bottom: 1px solid #e2e8f0; white-space: nowrap; background: #f8fafc; }
+        .dark .rekap-table th { background: #1e293b; border-bottom: 1px solid #334155; color: #f1f5f9; }
+        .rekap-table td { padding: 10px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; font-weight: 700; }
+        .dark .rekap-table td { border-bottom: 1px solid #1e293b; }
+        
+        .sticky-left { 
+            position: sticky; 
+            left: 0; 
+            z-index: 40; 
+            min-width: 110px; 
+            max-width: 110px;
+            text-align: left !important; 
+            padding-left: 12px !important; 
+            border-right: 1px solid #e2e8f0; 
+            background: #ffffff !important;
+            box-shadow: 4px 0 8px rgba(0,0,0,0.05);
+        }
+        .dark .sticky-left { 
+            border-right: 1px solid #334155; 
+            background: #0f172a !important; 
+            box-shadow: 4px 0 8px rgba(0,0,0,0.3);
+        }
+        
+        .today-col { background: #05966915 !important; border-left: 2px solid #059669; border-right: 2px solid #059669; }
+        .dark .today-col { background: #05966925 !important; }
+
+        .sticky-right { 
+            position: sticky; 
+            right: 0; 
+            z-index: 30; 
+            min-width: 45px; 
+            font-weight: 900 !important; 
+            border-left: 1px solid #e2e8f0; 
+            background: #f8fafc !important;
+            box-shadow: -4px 0 8px rgba(0,0,0,0.05); 
+        }
+        .dark .sticky-right { 
+            border-left: 1px solid #334155; 
+            background: #1e293b !important; 
+        }
+        
+        .code-P { color: #059669; background: #ecfdf5; }
+        .code-S { color: #d97706; background: #fffbeb; }
+        .code-M { color: #4f46e5; background: #eef2ff; }
+        
+        .schedule-content { max-height: none; overflow: visible; }
+        .laser-line { position: absolute; left: 0; right: 0; height: 3px; background: #10b981; box-shadow: 0 0 15px #10b981, 0 0 30px #10b981; animation: laser 2.5s infinite linear; z-index: 10; }
+    </style>
+
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json?v=1777167772870">
+    <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+
+<div id="loading-overlay" class="fixed inset-0 z-[5000] bg-white dark:bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="relative w-24 h-24">
+        <div class="absolute inset-0 border-4 border-emerald-500/20 rounded-3xl"></div>
+        <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-3xl animate-spin"></div>
+        <div class="absolute inset-4 bg-emerald-500/10 rounded-2xl animate-pulse flex items-center justify-center text-2xl">🕌</div>
+    </div>
+    <div class="mt-8 overflow-hidden rounded-full w-48 h-1 bg-slate-100 dark:bg-slate-800 relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-amber-400 animate-shimmer" style="width: 50%;"></div>
+    </div>
+    <p class="mt-4 text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 animate-pulse">Menghubungkan</p>
+</div>
+
+<div class="fixed top-0 left-0 right-0 h-[var(--sat)] bg-emerald-700 z-[1100]"></div>
+
+<div class="app-container mx-auto">
+    
+    <header id="main-header" class="bg-emerald-700 dark:bg-emerald-900 px-6 pt-12 pb-6 rounded-b-[2.5rem] overflow-hidden shadow-xl">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 glass-effect rounded-2xl flex items-center justify-center text-xl shadow-lg border border-white/20">📖</div>
+                <div>
+                    <p class="text-[8px] font-black text-emerald-100 uppercase tracking-widest leading-none">TPA BAITUL MUTTAQIN</p>
+                    <p class="text-[10px] font-bold text-white uppercase tracking-tighter">Desa Sampanahan Hilir</p>
+                    <div class="mt-1 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="header-shift-name" class="text-[7px] font-black text-amber-300 uppercase tracking-[0.2em]">14:00 - 16:00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <h2 id="time-display" class="text-lg font-black text-white tabular-nums tracking-tighter leading-none">00:00</h2>
+                    <p id="date-display" class="text-[7px] font-bold text-emerald-200 uppercase tracking-widest opacity-80">---</p>
+                </div>
+                <button onclick="toggleDarkMode()" class="w-10 h-10 bg-white/10 glass-effect rounded-2xl flex items-center justify-center text-white border border-white/20 transition-transform active:scale-90">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section id="profile-card" class="hidden px-6 mt-4 transition-all duration-500">
+        <div class="bg-white/80 dark:bg-slate-900/80 glass-effect p-6 rounded-[2.5rem] shadow-xl border border-white/20 dark:border-slate-800/50">
+            <div id="header-profile-section" class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <div id="nurse-initial" class="w-16 h-16 bg-emerald-600 dark:bg-slate-800 text-white dark:text-emerald-400 rounded-[1.8rem] flex items-center justify-center text-2xl font-black shadow-2xl border-4 border-white/20">?</div>
+                        <button onclick="logout()" id="btn-logout-header" class="absolute -bottom-1 -right-1 w-7 h-7 bg-rose-500 text-white rounded-xl border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        </button>
+                    </div>
+                    <div>
+                        <h1 id="user-greeting" class="text-lg font-extrabold text-slate-800 dark:text-white leading-tight uppercase tracking-tight">-</h1>
+                        <p id="nurse-full-name" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Guru TPA</p>
+                        <div id="gps-badge" class="inline-flex items-center gap-2 bg-slate-100 dark:bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200 dark:border-white/10 mt-3">
+                            <div id="gps-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                            <span id="gps-text" class="text-[8px] font-black text-slate-500 dark:text-white uppercase tracking-wider">Mencari GPS...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span id="user-jaga-status" class="hidden px-3 py-1 bg-emerald-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest animate-pulse shadow-lg">Aktif Mengajar</span>
+                </div>
+            </div>
+
+            <div class="mt-6 flex flex-col gap-4">
+                <div class="flex items-center justify-between px-2">
+                    <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Total Jam Mengajar</p>
+                    <div class="flex items-center gap-1.5 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                        <span class="text-[7px] font-black text-emerald-600 uppercase">Sesi:</span>
+                        <span id="stat-total-life" class="text-[9px] font-black text-emerald-700 dark:text-emerald-400">0</span>
+                    </div>
+                </div>
+                <button onclick="openPermissionModal()" class="w-full py-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-[10px] font-black text-amber-600 uppercase tracking-widest active:scale-95 transition-all">Pengajuan Izin / Sakit</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="rekap-header-controls" class="hidden px-6 pt-6 space-y-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tighter">Laporan Khidmah</h2>
+                <p id="rekap-month-label" class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">---</p>
+            </div>
+            <button onclick="exportToExcel()" class="bg-slate-900 dark:bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl active:scale-90 transition-all text-[10px] font-black uppercase tracking-widest">
+                Download Excel
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3 pb-2">
+            <div class="relative">
+                <input type="text" id="rekap-search" oninput="renderRekap()" placeholder="Cari ustadz..." class="w-full bg-white/50 dark:bg-slate-900/50 glass-effect border border-white/20 dark:border-slate-800 p-3 rounded-2xl text-[10px] font-bold outline-none focus:ring-2 ring-emerald-500/50 transition-all dark:text-white">
+            </div>
+            <div class="relative">
+                <select id="rekap-filter-shift" onchange="renderRekap()" class="w-full bg-white/50 dark:bg-slate-900/50 glass-effect border border-white/20 dark:border-slate-800 p-3 rounded-2xl text-[10px] font-black outline-none appearance-none dark:text-white">
+                    <option value="">Semua Waktu</option>
+                    <option value="Sore">Sore (14:00-16:00)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-scroll bg-mesh" id="scroll-root">
+        
+        <main id="view-home" class="px-6 mt-4 space-y-6">
+            <section id="card-auth" class="bg-white/80 dark:bg-slate-900/80 glass-effect p-8 rounded-[2.5rem] shadow-xl border border-white/20 dark:border-slate-800/50 text-center relative z-20">
+                <div class="w-16 h-16 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 rounded-[1.5rem] flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner animate-bounce">🗝️</div>
+                <h3 class="font-extrabold text-slate-800 dark:text-slate-100 text-sm uppercase tracking-widest mb-1">Verifikasi Akun</h3>
+                <div class="space-y-4">
+                    <select id="input-user" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-700 p-4 rounded-2xl text-xs font-black outline-none appearance-none text-center focus:border-emerald-500 transition-all dark:text-white">
+                        <option value="">Memuat Daftar...</option>
+                    </select>
+                    <button onclick="handleLogin()" id="btn-login-action" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-emerald-500/30 transition-all active:scale-95">Mulai Mengajar</button>
+                </div>
+            </section>
+
+            <div id="dashboard-content" class="hidden space-y-8">
+                <section>
+                    <div class="flex justify-between items-center mb-5 px-2">
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">📅 Jam Mengajar Sore</h3>
+                        <span id="logical-date-label" class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 uppercase tracking-widest">--/--/----</span>
+                    </div>
+                    <div id="schedule-container" class="space-y-4"></div>
+                </section>
+
+                <section class="pb-10">
+                    <div class="flex justify-between items-center mb-5 px-2">
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">📝 Log Kehadiran Harian</h3>
+                        <div class="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                            <span class="text-[8px] font-black text-emerald-500 uppercase tracking-widest">Live</span>
+                        </div>
+                    </div>
+                    <div id="live-log-container" class="space-y-3"></div>
+                </section>
+            </div>
+        </main>
+
+        <main id="view-rekap" class="hidden px-6 space-y-6 pt-2 pb-20">
+            <div class="rekap-wrapper bg-white/50 dark:bg-slate-900/50 glass-effect border border-white/20 dark:border-slate-800 shadow-2xl" id="rekap-scroll-container">
+                <div id="rekap-table-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto z-[2000] px-6 pb-[calc(1.5rem+var(--sab))] pt-4">
+        <div class="bg-white/70 dark:bg-slate-900/80 glass-effect border border-white/30 dark:border-slate-800/50 rounded-[2.5rem] p-3 flex items-center gap-4 shadow-xl">
+            <button onclick="showView('home')" id="nav-home" class="flex-1 py-4 flex flex-col items-center gap-1 rounded-[1.5rem] text-emerald-600 bg-emerald-500/10 transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[8px] font-black uppercase tracking-widest">Beranda</span>
+            </button>
+            <button onclick="initiateScan()" id="btn-main-scan" class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-6 rounded-[2rem] shadow-xl shadow-emerald-500/40 -mt-16 border-4 border-white dark:border-slate-950 active:scale-90 transition-all">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+            </button>
+            <button onclick="showView('rekap')" id="nav-rekap" class="flex-1 py-4 flex flex-col items-center gap-1 rounded-[1.5rem] text-slate-400 transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-[8px] font-black uppercase tracking-widest">Laporan</span>
+            </button>
+        </div>
+    </nav>
+</div>
+
+<div id="modal-permission" class="fixed inset-0 z-[7500] hidden bg-black/60 backdrop-blur-md flex items-center justify-center p-6">
+    <div class="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-slate-800 p-8">
+        <h4 class="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight">Formulir Pengajuan</h4>
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Lengkapi data ketidakhadiran</p>
+        
+        <div class="mt-8 space-y-6">
+            <div>
+                <label class="text-[8px] font-black uppercase tracking-widest text-emerald-600 block mb-2">Alasan</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectReason('Izin')" id="btn-reason-izin" class="py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest transition-all dark:text-white">Izin</button>
+                    <button onclick="selectReason('Sakit')" id="btn-reason-sakit" class="py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest transition-all dark:text-white">Sakit</button>
+                </div>
+            </div>
+            <div>
+                <label class="text-[8px] font-black uppercase tracking-widest text-emerald-600 block mb-2">Keterangan</label>
+                <textarea id="input-permission-desc" class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 p-4 rounded-2xl text-[10px] font-bold outline-none focus:border-emerald-500 transition-all dark:text-white" placeholder="Tulis alasan..." rows="3"></textarea>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button onclick="closePermissionModal()" class="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest">Batal</button>
+                <button onclick="submitPermission()" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-600/30">Kirim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-scanner" class="fixed inset-0 z-[6000] hidden flex-col bg-black/90 backdrop-blur-2xl">
+    <div class="px-6 pt-12 pb-6 flex justify-between items-center text-white">
+        <div><h4 class="font-black text-lg tracking-tighter uppercase">Scan Presensi Guru</h4><p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest">Kamera Aktif</p></div>
+        <button onclick="closeScanner()" class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">✕</button>
+    </div>
+    <div class="flex-1 flex flex-col items-center justify-center p-6"><div class="relative"><div id="qr-reader" class="w-[280px] h-[280px] bg-slate-950 rounded-[3rem] overflow-hidden border-4 border-white/20"></div><div class="laser-line"></div></div></div>
+</div>
+
+<div id="modal-success-presence" class="fixed inset-0 bg-white dark:bg-slate-950 z-[8000] hidden flex-col items-center justify-center text-center p-10">
+    <div class="w-32 h-32 bg-teal-500/10 text-teal-500 rounded-[2.5rem] flex items-center justify-center text-6xl mb-8 animate-bounce">✅</div>
+    <h2 class="text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">Berhasil!</h2>
+    <p id="success-nurse-name" class="text-xl font-bold text-teal-600 mt-3 uppercase tracking-widest"></p>
+    <div class="mt-10 w-full max-w-xs bg-slate-50 dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-100 dark:border-slate-800">
+        <p id="success-time" class="text-4xl font-black text-slate-800 dark:text-white tabular-nums tracking-tighter">00:00</p>
+        <p id="success-shift" class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-[0.2em]">---</p>
+    </div>
+    <button onclick="location.reload()" class="mt-12 w-full max-w-xs bg-slate-900 dark:bg-emerald-600 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.3em] active:scale-95 shadow-xl transition-all">Kembali</button>
+</div>
+
+<div id="alert-box" class="fixed top-8 left-6 right-6 z-[7000] transition-all duration-500 translate-y-[-150%] opacity-0 pointer-events-none">
+    <div class="bg-white/90 dark:bg-slate-900/90 glass-effect p-4 rounded-3xl shadow-2xl flex items-center gap-4 border border-white/20 dark:border-slate-800">
+        <div id="alert-icon-bg" class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl">💡</div>
+        <div class="flex-1"><h4 id="alert-title" class="text-[10px] font-black uppercase tracking-widest dark:text-white">Pesan Sistem</h4><p id="alert-msg" class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-0.5"></p></div>
+    </div>
+</div>
+
+<script>
+    const CONFIG = {
+        WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzLsQiMvxjDyc7jymvBLch6kzHc3VZKhNKmok3C9HHn-6_lIQMLAH6oOTzUX5lZKd5g/exec",
+        DEFAULT_QR: "SISTEM-PRO-01",
+        MONTHS: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+        LOCATIONS: [
+            { lat: -2.634344, lng: 116.205133, radius: 100 },
+            { lat: -2.635162, lng: 116.204380, radius: 100 }
+        ],
+        TEACHING_HOURS: { start: 14, end: 16 }
+    };
+
+    let state = {
+        user: localStorage.getItem('nurse_session_name') || null,
+        data: { officers: [], logs: [], schedule: {}, config: { voice: true, popup: true, gpsLock: false } },
+        isWithinRadius: false,
+        gpsCheckedOnce: false,
+        darkMode: localStorage.getItem('theme') === 'dark',
+        scanner: null,
+        audioContext: null,
+        selectedReason: null,
+        isLoading: true
+    };
+
+    function initAudio() { if (!state.audioContext) state.audioContext = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playSfx(type) {
+        initAudio(); const ctx = state.audioContext; const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination); const now = ctx.currentTime;
+        if (type === 'ping') {
+            osc.frequency.setValueAtTime(880, now); gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now); osc.stop(now + 0.2);
+        } else if (type === 'error') {
+            osc.type = 'square'; osc.frequency.setValueAtTime(220, now); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'success') {
+            [523.25, 659.25, 783.99].forEach((f, i) => {
+                const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination);
+                o.frequency.setValueAtTime(f, now + (i * 0.1)); g.gain.setValueAtTime(0.05, now + (i * 0.1)); g.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
+                o.start(now + (i * 0.1)); o.stop(now + (i * 0.1) + 0.3);
+            });
+        }
+    }
+    function triggerHaptic(t = 20) { if (navigator.vibrate) navigator.vibrate(t); }
+
+    function isWithinTeachingHours() {
+        const hr = new Date().getHours();
+        return hr >= CONFIG.TEACHING_HOURS.start && hr < CONFIG.TEACHING_HOURS.end;
+    }
+
+    function showView(v) {
+        triggerHaptic(15);
+        document.getElementById('view-home').classList.toggle('hidden', v !== 'home');
+        document.getElementById('view-rekap').classList.toggle('hidden', v !== 'rekap');
+        
+        const profile = document.getElementById('profile-card');
+        const rekapHeader = document.getElementById('rekap-header-controls');
+        
+        if (state.user && v === 'home') profile.classList.remove('hidden');
+        else profile.classList.add('hidden');
+
+        if (v === 'rekap') rekapHeader.classList.remove('hidden');
+        else rekapHeader.classList.add('hidden');
+
+        const navHome = document.getElementById('nav-home');
+        const navRekap = document.getElementById('nav-rekap');
+        if (v === 'home') {
+            navHome.className = 'flex-1 py-4 flex flex-col items-center gap-1 rounded-[1.5rem] text-emerald-600 bg-emerald-500/10 transition-all';
+            navRekap.className = 'flex-1 py-4 flex flex-col items-center gap-1 rounded-[1.5rem] text-slate-400 transition-all';
+        } else {
+            navHome.className = 'flex-1 py-4 flex flex-col items-center gap-1 rounded-[1.5rem] text-slate-400 transition-all';
+            navRekap.className = 'flex-1 py-4 flex flex-col items-center gap-1 rounded-[1.5rem] text-emerald-600 bg-emerald-500/10 transition-all';
+        }
+        if (v === 'rekap') {
+            renderRekap();
+            setTimeout(scrollToToday, 300);
+        }
+        document.getElementById('scroll-root').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToToday() {
+        const todayCell = document.querySelector('.today-col');
+        const wrapper = document.getElementById('rekap-scroll-container');
+        if (wrapper && todayCell) {
+            const offset = todayCell.offsetLeft - (wrapper.clientWidth / 2);
+            wrapper.scrollLeft = offset;
+        }
+    }
+
+    function showAlert(title, msg, type = 'success') {
+        const box = document.getElementById('alert-box');
+        const iconBg = document.getElementById('alert-icon-bg');
+        document.getElementById('alert-title').innerText = title;
+        document.getElementById('alert-msg').innerText = msg;
+        if(type === 'success') {
+            iconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-emerald-500/10 text-emerald-600"; iconBg.innerText = '✅';
+            playSfx('ping'); triggerHaptic(30);
+        } else {
+            iconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-rose-500/10 text-rose-500"; iconBg.innerText = '⚠️';
+            playSfx('error'); triggerHaptic(100);
+        }
+        box.style.transform = 'translateY(0)'; box.style.opacity = '1';
+        setTimeout(() => { box.style.transform = 'translateY(-150%)'; box.style.opacity = '0'; }, 3000);
+    }
+
+    function toggleDarkMode() {
+        triggerHaptic(20);
+        state.darkMode = !state.darkMode; localStorage.setItem('theme', state.darkMode ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', state.darkMode);
+        document.getElementById('theme-icon').innerText = state.darkMode ? '☀️' : '🌙';
+    }
+
+    async function fetchData(silent = false) {
+        try {
+            state.isLoading = true;
+            const resp = await fetch(`${CONFIG.WEB_APP_URL}?action=getData`);
+            state.data = await resp.json();
+            
+            const sel = document.getElementById('input-user');
+            if(!state.user){
+                 sel.innerHTML = `<option value="">-- Pilih Guru/Ustadz --</option>` + 
+                            (state.data.officers || []).map(o => `<option value="${o}">${o}</option>`).join('');
+            }
+
+            renderDashboard();
+            // GPS Aktif saat buka aplikasi (jika sudah login)
+            if (state.user && !state.gpsCheckedOnce) checkGPS();
+        } catch (e) { if(!silent) showAlert("Error", "Gagal sinkron database", "error"); }
+        finally { 
+            state.isLoading = false;
+            document.getElementById('loading-overlay').classList.add('hidden'); 
+        }
+    }
+
+    function handleLogin() {
+        if(state.isLoading) return showAlert("Tunggu", "Data sedang dimuat...", "error");
+        
+        const val = document.getElementById('input-user').value;
+        if (!val || val === "") return showAlert("Peringatan", "Pilih nama ustadz!", "error");
+        
+        state.user = val; 
+        localStorage.setItem('nurse_session_name', val);
+        showAlert("Berhasil", `Ustadz ${val} aktif`); 
+        
+        renderDashboard();
+        showView('home');
+        // GPS Aktif saat login
+        if(!state.gpsCheckedOnce) checkGPS();
+    }
+
+    function logout() { 
+        if(!confirm("Hentikan sesi mengajar?")) return;
+        state.user = null; 
+        localStorage.removeItem('nurse_session_name'); 
+        state.gpsCheckedOnce = false; 
+        
+        const sel = document.getElementById('input-user');
+        sel.innerHTML = `<option value="">-- Pilih Guru/Ustadz --</option>` + 
+                    (state.data.officers || []).map(o => `<option value="${o}">${o}</option>`).join('');
+        sel.value = "";
+        
+        renderDashboard(); 
+    }
+
+    function getShiftInfo() {
+        return { label: 'Sore', code: 'S' };
+    }
+
+    function getLogicalDate() {
+        const d = new Date(); if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+        return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\./g, '/');
+    }
+
+    function isHoliday() {
+        return new Date().getDay() === 5;
+    }
+
+    function openPermissionModal() {
+        if(isHoliday()) return showAlert("Hari Libur", "Tidak ada pengajuan di hari Jumat", "error");
+        state.selectedReason = null;
+        document.getElementById('btn-reason-izin').className = "py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest transition-all dark:text-white";
+        document.getElementById('btn-reason-sakit').className = "py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest transition-all dark:text-white";
+        document.getElementById('input-permission-desc').value = "";
+        document.getElementById('modal-permission').classList.remove('hidden');
+    }
+
+    function closePermissionModal() { document.getElementById('modal-permission').classList.add('hidden'); }
+
+    function selectReason(r) {
+        triggerHaptic(10);
+        state.selectedReason = r;
+        const izin = document.getElementById('btn-reason-izin');
+        const sakit = document.getElementById('btn-reason-sakit');
+        if(r === 'Izin') {
+            izin.className = "py-3 rounded-2xl border-2 border-emerald-500 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/30";
+            sakit.className = "py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest transition-all dark:text-white";
+        } else {
+            sakit.className = "py-3 rounded-2xl border-2 border-emerald-500 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/30";
+            izin.className = "py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest transition-all dark:text-white";
+        }
+    }
+
+    async function submitPermission() {
+        const desc = document.getElementById('input-permission-desc').value;
+        if(!state.selectedReason) return showAlert("Gagal", "Pilih alasan izin!", "error");
+        if(!desc) return showAlert("Gagal", "Tulis keterangan!", "error");
+        
+        document.getElementById('loading-overlay').classList.remove('hidden');
+        closePermissionModal();
+        
+        const logicalDate = getLogicalDate();
+        const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        
+        try {
+            const resp = await fetch(CONFIG.WEB_APP_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: 'saveScan', 
+                    payload: { 
+                        name: state.user, 
+                        date: logicalDate, 
+                        shift: state.selectedReason, 
+                        time: time + " (" + desc + ")" 
+                    } 
+                }) 
+            });
+            const res = await resp.json();
+            if (res.status === 'success') {
+                playSfx('success');
+                showAlert("Berhasil", "Data " + state.selectedReason + " telah terkirim");
+                fetchData(true);
+            } else {
+                showAlert("Gagal", res.message, "error");
+            }
+        } catch (e) {
+            showAlert("Koneksi", "Server tidak merespon", "error");
+        } finally {
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }
+    }
+
+    function renderDashboard() {
+        const logicalDate = getLogicalDate();
+        document.getElementById('user-greeting').innerText = state.user ? state.user : "-";
+        document.getElementById('logical-date-label').innerText = logicalDate;
+        
+        const isAuth = !!state.user;
+        document.getElementById('card-auth').classList.toggle('hidden', isAuth);
+        document.getElementById('dashboard-content').classList.toggle('hidden', !isAuth);
+        
+        const profile = document.getElementById('profile-card');
+        profile.classList.toggle('hidden', !isAuth);
+        
+        const isTeachingTime = isWithinTeachingHours();
+        document.getElementById('header-shift-name').innerText = isHoliday() ? "LIBUR JUMAT" : (isTeachingTime ? "SEDANG MENGAJAR" : "SORE (14-16)");
+
+        if(state.user) {
+            document.getElementById('nurse-full-name').innerText = state.user;
+            document.getElementById('nurse-initial').innerText = state.user.charAt(0);
+            const allLogsUser = (state.data.logs || []).filter(l => l.name === state.user);
+            document.getElementById('stat-total-life').innerText = allLogsUser.length;
+
+            const statusBadge = document.getElementById('user-jaga-status');
+            const userLogsToday = (state.data.logs || []).filter(l => l.name === state.user && l.date === logicalDate);
+            const latestLog = userLogsToday[0]; 
+            
+            if(isHoliday()) {
+                statusBadge.classList.remove('hidden');
+                statusBadge.innerText = "Libur Jumat";
+                statusBadge.className = "px-3 py-1 bg-amber-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
+            } else if(latestLog) {
+                statusBadge.classList.remove('hidden');
+                // Mode Ikuti Absen
+                if(latestLog.shift === 'Sore') {
+                    statusBadge.innerText = "Hadir Mengajar";
+                    statusBadge.className = "px-3 py-1 bg-emerald-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
+                } else {
+                    statusBadge.innerText = "Status: " + latestLog.shift;
+                    statusBadge.className = "px-3 py-1 bg-amber-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest shadow-lg";
+                }
+            } else if(isTeachingTime) {
+                statusBadge.classList.remove('hidden');
+                statusBadge.innerText = "Waktunya Mengajar";
+                statusBadge.className = "px-3 py-1 bg-emerald-500 text-white text-[7px] font-black rounded-full uppercase tracking-widest animate-pulse shadow-lg";
+            } else {
+                statusBadge.classList.add('hidden');
+            }
+        }
+
+        const dayNum = parseInt(logicalDate.split('/')[0]);
+        let schHtml = '';
+        ['Sore'].forEach(s => {
+            const activeNow = isTeachingTime && !isHoliday();
+            const names = (state.data.officers || []).filter(n => { 
+                const sd = state.data.schedule[n] || state.data.schedule[n.toUpperCase()]; 
+                return sd && (sd[dayNum] === 'S' || sd[String(dayNum)] === 'S'); 
+            });
+            
+            schHtml += `
+            <div class="schedule-card bg-white/60 dark:bg-slate-900/60 glass-effect p-5 rounded-[2rem] border ${activeNow ? 'border-emerald-500/30 ring-4 ring-emerald-500/5' : 'border-white/20 dark:border-slate-800'} shadow-sm transition-all cursor-default">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 ${activeNow ? 'bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'} rounded-2xl flex items-center justify-center text-sm font-black">S</div>
+                        <div class="flex-1">
+                            <p class="text-[7px] font-black uppercase ${activeNow ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'} tracking-widest leading-none mb-1">Guru Jadwal Sore:</p>
+                            <div class="flex flex-wrap gap-1.5 mb-1">
+                                ${isHoliday() ? '<span class="text-[10px] font-black text-amber-500 uppercase">HARI LIBUR</span>' : (names.length ? names.map(n => {
+                                    const logs = (state.data.logs || []).filter(l => l.name === n && l.date === logicalDate);
+                                    const logHadir = logs.find(l => l.shift === 'Sore');
+                                    const logIzin = logs.find(l => l.shift === 'Izin' || l.shift === 'Sakit');
+                                    let bHtml = logHadir ? `<span class="ml-1 text-[6px] bg-emerald-500/20 text-emerald-600 px-1 rounded uppercase tracking-tighter font-black">Hadir</span>` : (logIzin ? `<span class="ml-1 text-[6px] bg-amber-500/20 text-amber-600 px-1 rounded uppercase tracking-tighter font-black">${logIzin.shift}</span>` : "");
+                                    return `<div class="flex items-center"><span class="text-[10px] font-extrabold text-slate-700 dark:text-slate-200">${n}</span>${bHtml}${names.indexOf(n) !== names.length - 1 ? '<span class="mx-0.5 text-slate-300">,</span>' : ''}</div>`;
+                                }).join('') : '<span class="text-[9px] text-slate-300 italic font-bold uppercase tracking-wider">Kosong</span>')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        document.getElementById('schedule-container').innerHTML = schHtml;
+
+        const lToday = (state.data.logs || []).filter(l => l.date === logicalDate).sort((a, b) => b.time.localeCompare(a.time));
+        document.getElementById('live-log-container').innerHTML = lToday.length ? lToday.map(l => {
+            const isPerm = l.shift === 'Izin' || l.shift === 'Sakit';
+            const bgClass = isPerm ? "bg-amber-500/10 text-amber-600 border-amber-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+            return `<div class="bg-white/40 dark:bg-slate-900/40 glass-effect p-4 rounded-[1.5rem] border border-white/20 dark:border-slate-800 flex items-center gap-4"><div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 rounded-xl flex items-center justify-center font-black text-xs uppercase">${l.name.charAt(0)}</div><div class="flex-1"><p class="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">${l.name}</p><p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${l.time} • ${l.shift}</p></div><div class="${bgClass} px-3 py-1.5 rounded-xl text-[7px] font-black uppercase border">${isPerm ? l.shift : 'Hadir'}</div></div>`;
+        }).join('') : '<div class="text-center py-10 opacity-30 text-[9px] font-black uppercase tracking-widest dark:text-white">Belum Ada Presensi</div>';
+
+        const sBtn = document.getElementById('btn-main-scan');
+        if(isHoliday() || !isTeachingTime) {
+            sBtn.classList.add('opacity-50', 'grayscale');
+            sBtn.onclick = () => showAlert("Bukan Jam Mengajar", "Presensi hanya jam 14:00 - 16:00", "error");
+        } else {
+            sBtn.classList.remove('opacity-50', 'grayscale');
+            sBtn.onclick = initiateScan;
+        }
+    }
+
+    function renderRekap() {
+        const now = new Date(); const year = now.getFullYear(); const month = now.getMonth(); const today = now.getDate();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const searchTerm = document.getElementById('rekap-search')?.value.toLowerCase() || "";
+        const shiftFilter = document.getElementById('rekap-filter-shift')?.value || "";
+        document.getElementById('rekap-month-label').innerText = `${CONFIG.MONTHS[month]} ${year}`;
+        let html = `<table class="rekap-table"><thead><tr class="bg-slate-50 dark:bg-slate-800"><th class="sticky-left">Ustadz/Guru</th>`;
+        for(let i=1; i<=daysInMonth; i++) {
+            const isFri = new Date(year, month, i).getDay() === 5;
+            html += `<th class="${i === today ? 'today-col' : ''} ${isFri ? 'text-rose-500' : ''}">${i}</th>`;
+        }
+        html += `<th class="sticky-right">JAM</th></tr></thead><tbody>`;
+        const filtered = (state.data.officers || []).filter(o => o.toLowerCase().includes(searchTerm)).sort();
+        if (!filtered.length) { html += `<tr><td colspan="${daysInMonth + 2}" class="py-10 text-center opacity-30 italic text-[9px] uppercase tracking-widest dark:text-white">Data tidak ditemukan</td></tr>`; }
+        else {
+            filtered.forEach(name => {
+                let total = 0; let rowCells = ""; let hasM = false;
+                for(let d=1; d<=daysInMonth; d++) {
+                    const dK = `${d.toString().padStart(2, '0')}/${(month + 1).toString().padStart(2, '0')}/${year}`;
+                    const logs = (state.data.logs || []).filter(l => l.name === name && l.date === dK);
+                    let char = new Date(year, month, d).getDay() === 5 ? 'L' : '-';
+                    let css = char === 'L' ? 'text-rose-500 opacity-50' : 'opacity-20 dark:text-slate-700';
+                    if (logs.length > 0) {
+                        const l = logs[0]; const isP = l.shift === 'Izin' || l.shift === 'Sakit';
+                        if (shiftFilter === "" || l.shift === shiftFilter || (isP && shiftFilter === "")) {
+                            char = isP ? l.shift.charAt(0) : 'S';
+                            css = isP ? 'code-S !text-amber-600 !bg-amber-100 font-black' : `code-S font-black`;
+                            if(!isP) total++; hasM = true;
+                        }
+                    }
+                    rowCells += `<td class="${css} ${d === today ? 'today-col' : ''}">${char}</td>`;
+                }
+                if (shiftFilter === "" || hasM) { html += `<tr><td class="sticky-left uppercase font-black text-slate-700 dark:text-slate-300">${name}</td>${rowCells}<td class="sticky-right dark:text-emerald-400 font-black">${total}</td></tr>`; }
+            });
+        }
+        document.getElementById('rekap-table-container').innerHTML = html + `</tbody></table>`;
+    }
+
+    async function initiateScan() {
+        if(isHoliday()) return showAlert("Hari Libur", "Tidak ada presensi di hari Jumat", "error");
+        if(!isWithinTeachingHours()) return showAlert("Bukan Jam Mengajar", "Presensi hanya jam 14:00 - 16:00", "error");
+        if (!state.user) return showAlert("Akses Ditolak", "Pilih akun ustadz dulu", "error");
+        
+        if (state.data.config.gpsLock && !state.isWithinRadius) {
+             showAlert("Lokasi Gagal", "Anda harus berada di area TPA untuk scan", "error");
+             checkGPS(); 
+             return;
+        }
+
+        const lDate = getLogicalDate();
+        const logsToday = (state.data.logs || []).filter(l => l.name === state.user && l.date === lDate);
+        if (logsToday.some(l => l.shift === 'Sore' || l.shift === 'Izin' || l.shift === 'Sakit')) return showAlert("Info", `Anda sudah melakukan presensi/izin hari ini`, "error");
+        
+        document.getElementById('modal-scanner').classList.remove('hidden');
+        state.scanner = new Html5Qrcode("qr-reader");
+        try {
+            await state.scanner.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, async (txt) => {
+                if (txt === (state.data.config.qrData || CONFIG.DEFAULT_QR)) { await state.scanner.stop(); state.scanner = null; document.getElementById('modal-scanner').classList.add('hidden'); processScan(); } 
+                else { showAlert("QR Gagal", "QR Code tidak valid", "error"); }
+            });
+        } catch (e) { showAlert("Error", "Gagal akses kamera", "error"); closeScanner(); }
+    }
+
+    async function processScan() {
+        document.getElementById('loading-overlay').classList.remove('hidden');
+        const logicalDate = getLogicalDate(); const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        try {
+            const resp = await fetch(CONFIG.WEB_APP_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: 'saveScan', 
+                    payload: { name: state.user, date: logicalDate, shift: 'Sore', time: time } 
+                }) 
+            });
+            const res = await resp.json();
+            if (res.status === 'success') { 
+                playSfx('success'); 
+                document.getElementById('success-nurse-name').innerText = state.user; 
+                document.getElementById('success-time').innerText = time; 
+                document.getElementById('success-shift').innerText = `HADIR (SORE)`; 
+                document.getElementById('modal-success-presence').classList.remove('hidden'); 
+                fetchData(true); 
+            } else { 
+                showAlert("Gagal", res.message, "error"); 
+            }
+        } catch (e) { showAlert("Koneksi", "Server tidak merespon", "error"); }
+        finally { document.getElementById('loading-overlay').classList.add('hidden'); }
+    }
+
+    function checkGPS() {
+        if (!state.data.config.gpsLock || state.gpsCheckedOnce) { 
+            state.isWithinRadius = true; 
+            updateGPSUI(true, 0);
+            return; 
+        }
+
+        navigator.geolocation.getCurrentPosition(pos => {
+            const uLat = pos.coords.latitude; const uLng = pos.coords.longitude;
+            let found = false; let minD = Infinity;
+            CONFIG.LOCATIONS.forEach(loc => {
+                const R = 6371e3; const φ1 = uLat * Math.PI/180; const φ2 = loc.lat * Math.PI/180; const Δφ = (loc.lat - uLat) * Math.PI/180; const Δλ = (loc.lng - uLng) * Math.PI/180;
+                const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+                const d = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                if (d <= loc.radius) found = true; if (d < minD) minD = d;
+            });
+            
+            state.isWithinRadius = found;
+            if(found) state.gpsCheckedOnce = true; 
+            updateGPSUI(found, minD);
+        }, (err) => {
+            console.error(err);
+            showAlert("GPS Error", "Aktifkan GPS perangkat anda", "error");
+        }, { enableHighAccuracy: true });
+    }
+
+    function updateGPSUI(isValid, distance) {
+        const dot = document.getElementById('gps-dot'); 
+        const text = document.getElementById('gps-text');
+        if(!dot || !text) return;
+        if (isValid) { 
+            dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400"; 
+            text.innerText = "Lokasi Valid (TPA)"; 
+        } else { 
+            dot.className = "w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"; 
+            text.innerText = `${Math.round(distance)}m Luar Area`; 
+        }
+    }
+
+    function exportToExcel() {
+        const table = document.getElementById('rekap-table-container').querySelector('table');
+        if (!table) return showAlert("Gagal", "Data kosong", "error");
+        const wb = XLSX.utils.table_to_book(table); XLSX.writeFile(wb, `Rekap_Presensi_TPA_${new Date().getTime()}.xlsx`);
+    }
+
+    function closeScanner() { document.getElementById('modal-scanner').classList.add('hidden'); if(state.scanner) state.scanner.stop(); }
+
+    window.onload = () => {
+        if(state.darkMode) document.documentElement.classList.add('dark');
+        fetchData();
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('time-display').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('date-display').innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            
+            const isT = isWithinTeachingHours();
+            const hS = document.getElementById('header-shift-name');
+            if (hS) hS.innerText = isHoliday() ? "LIBUR JUMAT" : (isT ? "SEDANG MENGAJAR" : "SORE (14-16)");
+        }, 1000);
+        setInterval(() => fetchData(true), 60000);
+        // GPS hanya melacak jika user login dan belum divalidasi sekali
+        setInterval(() => { if (state.user && !state.gpsCheckedOnce) checkGPS(); }, 15000);
+    };
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js?v=202604').then(reg => { console.log('PWA: Ready'); }).catch(err => console.log('SW Fail', err));
+        });
+    }
+</script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js?v=1777167772870').then(reg => {
+            console.log('PWA: ServiceWorker Registered');
+            
+            reg.onupdatefound = () => {
+              const installingWorker = reg.installing;
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  window.location.reload();
+                }
+              };
+            };
+          });
+        });
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      }
+    </script>
+</body>
+</html>
